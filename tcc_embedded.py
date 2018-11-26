@@ -211,6 +211,6 @@ while(1):
 
 cap.release()
 #out.release()
-cv2.destroyAllWindows()
+#cv2.destroyAllWindows()
 
 mean = sum(timeslist)/len(timeslist)
