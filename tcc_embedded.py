@@ -18,8 +18,8 @@ import time
 #VID_DIRECTORY = "D:\\Users\\f202897\\Desktop\\vm-master\\Videos\\"
 #VID_DIRECTORY = "C:\\Users\\victor\\Desktop\\vm-master\\Videos\\"
 #VID_DIRECTORY = "C:\\Users\\victo\\Desktop\\"
-VID_DIRECTORY = "C:\\Users\\victor\\Desktop\\tcc\\videos\\"
-#VID_DIRECTORY = ""
+#VID_DIRECTORY = "C:\\Users\\victor\\Desktop\\tcc\\videos\\"
+VID_DIRECTORY = ""
 
 #kernels
 KERNEL5=cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
