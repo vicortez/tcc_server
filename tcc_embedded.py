@@ -43,6 +43,10 @@ CAR_FLOW_ORIENTATION='horizontal'
 FASTMODE = False
 DEBUG=False
 DISPLAY_VIDEO=True
+EMBEDDED_MODE=True
+if EMBEDDED_MODE:
+    DISPLAY_VIDEO = False
+    FASTMODE=True
 #==============================================================================
 
 
@@ -130,10 +134,9 @@ while(1):
     #clearing small blobs
     for index, el in enumerate(hull):
         area = cv2.contourArea(el)
-        if area < 1500 or area > 50000:
+        if area < 1500 or area > 200000:
             del hull[index]
-        
-    
+          
     blank=np.zeros(image22.copy().shape,np.uint8)
     #converting image back to 3 channels to display border colours
     image22=cv2.cvtColor(image22,cv2.COLOR_GRAY2BGR)
@@ -195,7 +198,9 @@ while(1):
     #==========================================================================
     
     # display images ==========================================================
-
+    if(DISPLAY_VIDEO):
+        cv2.imshow('framecopy', framecopy)
+        cv2.imshow('thing', image22)
     #==========================================================================
     
     #saving video
