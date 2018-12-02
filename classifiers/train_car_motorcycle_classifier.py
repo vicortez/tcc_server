@@ -11,6 +11,10 @@ import cv2
 import random
 from sklearn.metrics import confusion_matrix
 import itertools
+from keras.models import model_from_json
+import tensorflow as tf
+import preparing_custom_dataset as vicdat
+
 
 def classify(img):
     img=cv2.resize(img,(32,32))
@@ -27,23 +31,50 @@ def classify(img):
     predictions = model.predict(img)
     print(predictions,LABELS[np.argmax(predictions[0])])
     
+    
 def showsome(n=10,set='test'):
     if set=='train':
         for el in random.sample(range(1, len(filtered_x_train)-1), n):
-            plt.imshow(filtered_x_train[el])
+            plt.imshow(np.uint8(filtered_x_train[el]))
             plt.show()
             print(filtered_y_train[el])
         
     elif set=='test':
         for el in random.sample(range(1, len(filtered_x_test)-1), n):
-            plt.imshow(filtered_x_test[el])
+            plt.imshow(np.uint8(filtered_x_test[el]))
             plt.show()
             print(filtered_y_test[el])
     elif set=='car':
-        for el in random.sample(range(1, len(cars_x_train)-1), n):
-            plt.imshow(cars_x_train[el])
+        for el in random.sample(range(1, len(cifar10_cars_x_train)-1), n):
+            plt.imshow(np.uint8(cifar10_cars_x_train[el]))
             plt.show()
-            print(cars_y_train[el])
+            print(cifar10_cars_y_train[el])
+            
+def show_images(images, cols = 1, titles = None):
+    """Display a list of images in a single figure with matplotlib.
+    
+    Parameters
+    ---------
+    images: List of np.arrays compatible with plt.imshow.
+    
+    cols (Default = 1): Number of columns in figure (number of rows is 
+                        set to np.ceil(n_images/float(cols))).
+    
+    titles: List of titles corresponding to each image. Must have
+            the same length as titles.
+    """
+    assert((titles is None)or (len(images) == len(titles)))
+    n_images = len(images)
+    if titles is None: titles = ['Image (%d)' % i for i in range(1,n_images + 1)]
+    fig = plt.figure()
+    for n, (image, title) in enumerate(zip(images, titles)):
+        a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
+        if image.ndim == 2:
+            plt.gray()
+        plt.imshow(image)
+        a.set_title(title)
+    fig.set_size_inches(np.array(fig.get_size_inches()) * n_images)
+    plt.show()
             
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
@@ -137,48 +168,79 @@ filtered_y_train=[]
 filtered_x_test=[]
 filtered_y_test=[]
 
-cars_x_train=[]
-cars_y_train=[]
-cars_x_test=[]
-cars_y_test=[]
+cifar10_cars_x_train=[]
+cifar10_cars_y_train=[]
+cifar10_cars_x_test=[]
+cifar10_cars_y_test=[]
 
+mot_count=0
 for pos,i in enumerate(y_train):
-    #motorcycle = 1
+    #motorcycle = 0
+    if mot_count == 300:
+        break
     if i==48:
+        mot_count+=1
         filtered_x_train.append(x_train[pos])
         filtered_y_train.append(0)
-
+        
+mot_count=0
 for pos,i in enumerate(y_test):
     #motorcycle
+    if mot_count == 60:
+        break
     if i==48:
         filtered_x_test.append(x_test[pos])
         filtered_y_test.append(0)
         
 #getting the cars from the cifar10 dataset    
 for pos,i in enumerate(y_train2):
-    #car = 2
+    #car = 1
     if i==1:
-        cars_x_train.append(x_train2[pos])
-        cars_y_train.append(1)
+        cifar10_cars_x_train.append(x_train2[pos])
+        cifar10_cars_y_train.append(1)
 
 for pos,i in enumerate(y_test2):
     #car
     if i==1:
-        cars_x_test.append(x_test2[pos])
-        cars_y_test.append(1)
-        
-for el in random.sample(range(1, len(cars_x_train)-1), 600):
-    pos = random.randint(1,len(filtered_x_train)-1)
-    filtered_x_train.insert(pos ,cars_x_train[el])
-    filtered_y_train.insert(pos ,cars_y_train[el])
-       
-for el in random.sample(range(1, len(cars_x_test)-1), 120):
-    pos = random.randint(1,len(filtered_x_test)-1)
-    filtered_x_test.insert(pos ,cars_x_test[el])
-    filtered_y_test.insert(pos ,cars_y_test[el])
+        cifar10_cars_x_test.append(x_test2[pos])
+        cifar10_cars_y_test.append(1)
+#inserting the cars in random positions in the train dataset
+for el in random.sample(range(0, len(cifar10_cars_x_train)-1), 300):
+    pos = random.randint(0,len(filtered_x_train)-1)
+    filtered_x_train.insert(pos ,cifar10_cars_x_train[el])
+    filtered_y_train.insert(pos ,cifar10_cars_y_train[el])
+#inserting the cars in random positions in the test dataset
+for el in random.sample(range(0, len(cifar10_cars_x_test)-1), 60):
+    pos = random.randint(0,len(filtered_x_test)-1)
+    filtered_x_test.insert(pos ,cifar10_cars_x_test[el])
+    filtered_y_test.insert(pos ,cifar10_cars_y_test[el])
     
 
-            
+#getting cars from the custom dataset
+custom_car_images = vicdat.load_car_imgs()
+#inserting them in random positions in the train dataset
+for el in custom_car_images:
+    pos = random.randint(0,len(filtered_x_train)-1)
+    filtered_x_train.insert(pos ,el)
+    filtered_y_train.insert(pos ,1)   
+#inserting the cars in random positions in the test dataset
+for el in random.sample(range(0, len(custom_car_images)-1), int(len(custom_car_images)*0.2)):
+    pos = random.randint(0,len(custom_car_images)-1)
+    filtered_x_test.insert(pos ,custom_car_images[el])
+    filtered_y_test.insert(pos ,1)
+
+#getting motorcycles from the custom dataset
+custom_mot_images = vicdat.load_mot_imgs()    
+for el in custom_mot_images:
+    pos = random.randint(0,len(filtered_y_train)-1)
+    filtered_x_train.insert(pos ,el)
+    filtered_y_train.insert(pos ,0)
+        #inserting the cars in random positions in the test dataset
+for el in random.sample(range(0, len(custom_mot_images)-1), int(len(custom_mot_images)*0.2)):
+    pos = random.randint(0,len(custom_mot_images)-1)
+    filtered_x_test.insert(pos ,custom_mot_images[el])
+    filtered_y_test.insert(pos ,0)
+    
 
 filtered_x_train=np.array(filtered_x_train)
 filtered_y_train=np.array(filtered_y_train)

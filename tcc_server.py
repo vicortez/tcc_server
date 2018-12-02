@@ -7,16 +7,9 @@ import numpy as np
 import cv2
 import classifiers.custom_classifier_tcc as classification
 
+GLOBAL_COUNT_IN=0
+GLOBAL_COUNT_OUT=0
 
-# OpenCV detector classes and functions =======================================
-# initialize the list of class labels MobileNet SSD was trained to
-# detect, then generate a set of bounding box colors for each class
-CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
-           "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
-           "dog", "horse", "motorbike", "person", "pottedplant", "sheep",
-           "sofa", "train", "tvmonitor"]
-
-# load our serialized model from disk
 
 
 class ObjectDetector:
