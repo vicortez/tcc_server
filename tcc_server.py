@@ -7,10 +7,13 @@ import numpy as np
 import cv2
 import classifiers.custom_classifier_tcc as classification
 
+
 GLOBAL_COUNT_IN=0
+GLOBAL_COUNT_IN_CAR=0
+GLOBAL_COUNT_IN_MOT=0
 GLOBAL_COUNT_OUT=0
-
-
+GLOBAL_COUNT_OUT_CAR=0
+GLOBAL_COUNT_OUT_MOT=0
 
 class ObjectDetector:
 
@@ -96,6 +99,13 @@ class Device(Resource):
 
 class Upload(Resource):
     def post(self):
+        global GLOBAL_COUNT_IN
+        global GLOBAL_COUNT_IN_CAR
+        global GLOBAL_COUNT_IN_MOT
+        global GLOBAL_COUNT_OUT
+        global GLOBAL_COUNT_OUT_CAR
+        global GLOBAL_COUNT_OUT_MOT
+
         parser.parse_args()
         # check if the post request has the file part
         if ('file' not in request.files) or ('json' not in request.form):
@@ -114,7 +124,21 @@ class Upload(Resource):
         direction = mdata['direction']
         print("Image received:\nsensor_id = {}\ntime_stamp = {}"
               "\ndirection = {}".format(sensor_id, time_stamp,direction))
-        classification.classify(cv2.imread("images/"+filename))
+        vehicle_type = classification.classify(cv2.imread("images/"+filename))
+        if direction == 'l-r':
+            GLOBAL_COUNT_IN+=1
+            if vehicle_type == 'motorcycle':
+                GLOBAL_COUNT_IN_MOT+=1
+            else:
+                GLOBAL_COUNT_IN_CAR+=1
+        elif direction == 'r-l':
+            GLOBAL_COUNT_OUT+=1
+            if vehicle_type == 'motorcycle':
+                GLOBAL_COUNT_OUT_MOT+=1
+            else:
+                GLOBAL_COUNT_OUT_CAR+=1
+        print(str(GLOBAL_COUNT_IN), "veículos entraram no local:"+str(GLOBAL_COUNT_IN_CAR),"carros e",str(GLOBAL_COUNT_IN_MOT),'motocicletas')
+        print(str(GLOBAL_COUNT_OUT), "veículos sairam do local:"+str(GLOBAL_COUNT_OUT_CAR),"carros e",str(GLOBAL_COUNT_OUT_MOT),'motocicletas')
         return {"message": "Ok. File received."}
 
 
@@ -124,4 +148,5 @@ api.add_resource(Upload, '/upload')
 
 
 if __name__ == '__main__':
+
     app.run(host='0.0.0.0', port='8000')

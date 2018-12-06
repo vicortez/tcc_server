@@ -21,6 +21,7 @@ def classify(img):
     with graph.as_default():
         predictions = loaded_model.predict(img_array)
         print(predictions,LABELS[np.argmax(predictions[0])])
+        return( LABELS[np.argmax(predictions[0])] )
 
     
 LABELS = ['motorcycle', 'streetcar']
