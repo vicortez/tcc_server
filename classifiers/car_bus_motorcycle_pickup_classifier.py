@@ -97,41 +97,6 @@ for pos,i in enumerate(y_test):
         filtered_x_test.append(x_test[pos])
         filtered_y_test.append(3)
 
-del filtered_x_test[22]
-del filtered_x_test[31]
-del filtered_x_test[57]
-del filtered_x_test[104]
-del filtered_x_test[342]
-del filtered_x_test[343]
-del filtered_x_test[348]
-del filtered_y_test[22]
-del filtered_y_test[31]
-del filtered_y_test[57]
-del filtered_y_test[104]
-del filtered_y_test[342]
-del filtered_y_test[343]
-del filtered_y_test[348]
-
-
-del filtered_x_train[6]
-del filtered_x_train[17]
-del filtered_x_train[41]
-del filtered_x_train[98]
-del filtered_x_train[133]
-del filtered_x_train[137]
-del filtered_x_train[161]
-del filtered_x_train[192]
-del filtered_x_train[207]
-del filtered_y_train[6]
-del filtered_y_train[17]
-del filtered_y_train[41]
-del filtered_y_train[98]
-del filtered_y_train[133]
-del filtered_y_train[137]
-del filtered_y_train[161]
-del filtered_y_train[192]
-del filtered_y_train[207]
-
 filtered_x_train=np.array(filtered_x_train)
 filtered_y_train=np.array(filtered_y_train)
 filtered_x_test=np.array(filtered_x_test)
@@ -147,7 +112,6 @@ filtered_x_test /= np.max(filtered_x_test) # Normalise data to [0, 1] range
 
 filtered_Y_train = np_utils.to_categorical(filtered_y_train, num_classes) # One-hot encode the labels
 filtered_Y_test = np_utils.to_categorical(filtered_y_test, num_classes) # One-hot encode the labels
-
 
 
 

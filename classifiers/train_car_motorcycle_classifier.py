@@ -33,6 +33,7 @@ def classify(img):
     
     
 def showsome(n=10,set='test'):
+    figarray=[]
     if set=='train':
         for el in random.sample(range(1, len(filtered_x_train)-1), n):
             plt.imshow(np.uint8(filtered_x_train[el]))
@@ -49,8 +50,16 @@ def showsome(n=10,set='test'):
             plt.imshow(np.uint8(cifar10_cars_x_train[el]))
             plt.show()
             print(cifar10_cars_y_train[el])
+    elif set=='custom':
+        for el in random.sample(range(1, len(custom_mot_images)-1), n):
+            coinflip=bool(random.getrandbits(1))
+            if coinflip:
+                figarray.append(custom_mot_images[el])
+            else:
+                figarray.append(custom_car_images[el])
+        return figarray
             
-def show_images(images, cols = 1, titles = None):
+def show_images(images, cols = 3, titles = None):
     """Display a list of images in a single figure with matplotlib.
     
     Parameters
@@ -126,7 +135,7 @@ def model_conf():
 
     plt.show()
     
-
+# ==================================================================================
 CIFAR100_LABELS_LIST = [
     'apple', 'aquarium_fish', 'baby', 'bear', 'beaver', 'bed', 'bee', 'beetle', 
     'bicycle', 'bottle', 'bowl', 'boy', 'bridge', 'bus', 'butterfly', 'camel', 
